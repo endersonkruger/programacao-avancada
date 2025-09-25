@@ -1,0 +1,7 @@
+gear-up/Cargo.lock
+gear-up/target/
+gear-up/*.txt
+log_plotter/Cargo.lock
+log_plotter/target/
+log_plotter/*.txt
+log_plotter*.png
