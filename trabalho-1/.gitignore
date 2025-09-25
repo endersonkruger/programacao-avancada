@@ -4,4 +4,4 @@ gear-up/*.txt
 log_plotter/Cargo.lock
 log_plotter/target/
 log_plotter/*.txt
-log_plotter*.png
+log_plotter/*.png
