@@ -3,7 +3,7 @@
 | Trabalho  | Data e hora da entrega do último arquivo | Link para os arquivos no GIT | Fez tudo o que foi solicitado e no prazo? |
 | - | :-: | :-: | :-: |
 | 1 | 25/09/25, 20:48 | [LINK](trabalho-1) | Sim |
-| 2 | | [LINK](trabalho-2) | |
+| 2 | 04/10/25, 16:33 | [LINK](trabalho-2) | Sim |
 | 3 |
 | 4 |
 | 5 |
