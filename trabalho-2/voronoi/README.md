@@ -3,4 +3,4 @@
 
 ## TRABALHO 2 - DIAGRAMA DE VORONOI
 
-detalhes da implementação
+A codigo implementa um programa interativo que permite ao usuário criar e manipular diagramas de Voronoi e suas triangulações de Delaunay correspondentes em tempo real.
