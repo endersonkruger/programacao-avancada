@@ -1,0 +1,6 @@
+
+# TÓPICOS ESPECIAIS EM COMPUTAÇÃO II - PROGRAMAÇÃO AVANÇADA
+
+## TRABALHO 2 - DIAGRAMA DE VORONOI
+
+detalhes da implementação

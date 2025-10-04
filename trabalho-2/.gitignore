@@ -1,1 +1,8 @@
-diagrama-de-voronoy/Cargo.lock
+voronoi/Cargo.lock
+voronoi/target/
+
+benchmark-graph/Cargo.lock
+benchmark-graph/target
+benchmark-graph/benchmark_data.csv
+benchmark-graph/benchmark_graph.png
+

@@ -1,7 +1,7 @@
 
 # TÓPICOS ESPECIAIS EM COMPUTAÇÃO II - PROGRAMAÇÃO AVANÇADA
 
-## TRABALHO 2 - DIAGRAMA DE VORONOY
+## TRABALHO 2 - DIAGRAMA DE VORONOI
 
 - Implementar diagrama de voronoy
     - [Diagrama de Voronoy](https://pt.wikipedia.org/wiki/Diagrama_de_Voronoy)
