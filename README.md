@@ -2,8 +2,8 @@
 
 | Trabalho  | Data e hora da entrega do último arquivo | Link para os arquivos no GIT | Fez tudo o que foi solicitado e no prazo? |
 | - | :-: | :-: | :-: |
-| 1 | 25/09/25, 20:48 | [LINK](https://github.com/endersonkruger/programacao-avancada/tree/08a8db4e33b3644a02c99f1aeffd73cce21317c0/trabalho-1) | Sim |
-| 2 | | [LINK](https://github.com/endersonkruger/programacao-avancada/tree/2c56e7381d2e0436819c86af000beb64674f6ca0/trabalho-2) | |
+| 1 | 25/09/25, 20:48 | [LINK](trabalho-1) | Sim |
+| 2 | | [LINK](trabalho-2) | |
 | 3 |
 | 4 |
 | 5 |
