@@ -1,5 +1,5 @@
-use macroquad::prelude::*;
 use crate::geometry::Point;
+use macroquad::prelude::*;
 
 // Desenha os pontos
 pub fn render_points(points: &Vec<Point>) {
@@ -30,7 +30,7 @@ pub fn render_hud(num_points: usize, exec_time_us: f32) {
         YELLOW,
     );
     draw_text(
-        "Clique: Ponto | R: Aleatórios | C: Círculo | T: Retângulo | Espaço: Limpar | Esc/Ctrl+C: Salvar e Sair",
+        "Clique: Ponto | R: Aleatórios | C: Círculo | T: Retângulo | B: BENCHMARK | Espaço: Limpar | Esc/Ctrl+C: Salvar e Sair",
         20.0,
         screen_height() - 30.0,
         20.0,
