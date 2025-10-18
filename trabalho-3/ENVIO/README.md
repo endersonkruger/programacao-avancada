@@ -4,10 +4,9 @@
 
 O envio consta de:
 
--   Executável do programa principal `s`
--   Executável do benchmark `s`
-    -   arquivo .csv que contém os dados de uma execução de benchmark `A.csv`
-    -   imagem .png que contém o gráfico de uma execução baseada nos dados do .csv `A`
+-   Executável do programa principal `envoltoria-convexa.exe`
+-   Notebook Colab contendo o código para os gráficos de benchmark `tarefa_3_gráficos.ipynb`
+    -   arquivo .csv que contém os dados de uma execução de benchmark `benchmark_results.csv`
 -   Vídeo que demonstra a execução do programa `showcase.mp4`
 
 ### RELAÇÃO ENTRE ENVOLTÓRIA CONVEXA E DIAGRAMA DE VORONOI
