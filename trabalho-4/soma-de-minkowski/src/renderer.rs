@@ -37,7 +37,12 @@ pub fn render_hull(hull: &Vec<Point>) {
 }
 
 // Mostra o HUD (informações na tela)
-pub fn render_hud(num_points: usize, exec_time_us: f32) {
+pub fn render_hud(
+    num_points: usize,
+    exec_time_us: f32,
+    distances: &Vec<(usize, f32)>, // Recebe a lista de distâncias (ID, valor)
+    benchmark_msg: &str,
+) {
     draw_text(
         &format!("Pontos (ativos): {}", num_points),
         20.0,
@@ -52,6 +57,32 @@ pub fn render_hud(num_points: usize, exec_time_us: f32) {
         24.0,
         YELLOW,
     );
+
+    // --- Início da Tabela de Distâncias ---
+    let mut y_offset = 90.0;
+
+    // Mostra a mensagem do benchmark se houver
+    if !benchmark_msg.is_empty() {
+        draw_text(benchmark_msg, 20.0, y_offset, 24.0, WHITE);
+        y_offset += 30.0;
+    }
+
+    draw_text("Distâncias do Robô:", 20.0, y_offset, 22.0, WHITE);
+    y_offset += 25.0;
+
+    // Desenha cada entrada da tabela de distâncias
+    for (id, dist) in distances {
+        let color = if *dist == 0.0 { RED } else { WHITE }; // Vermelho se colidindo
+        draw_text(
+            &format!("  Polígono {}: {:.2}", id, dist),
+            20.0,
+            y_offset,
+            20.0,
+            color,
+        );
+        y_offset += 25.0;
+    }
+    // --- Fim da Tabela de Distâncias ---
 
     // Texto de ajuda com os controles
     draw_text(
