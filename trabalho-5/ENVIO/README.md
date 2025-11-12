@@ -4,8 +4,7 @@
 
 O envio consta de:
 
--   Executável do programa principal `soma-de-minkowski.exe`
--   Notebook Colab contendo o código para os gráficos de benchmark `trabalho_4_graficos.ipynb`
-    -   arquivo .csv que contém os dados de uma execução de benchmark `benchmark_results.csv`
--   Vídeo que demonstra a execução do programa `showcase_1.mp4`
--   Vídeo que demonstra a execução do programa e mostra a função de cálculo de distância dos polígonos `showcase_2.mp4`
+-   Executável do programa principal `navegacao.exe`
+-   Notebook Colab contendo o código para os gráficos de benchmark `trabalho_5_graficos.ipynb`
+    -   arquivo .csv que contém os dados de uma execução de benchmark `pathfinding_benchmark.csv`
+-   Vídeo que demonstra a execução do programa `showcase.mp4`

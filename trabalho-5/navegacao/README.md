@@ -2,6 +2,6 @@
 
 ## TRABALHO 5 - NAVEGAÇÃO
 
-O código implementa um programa interativo que permite ao usuário criar pontos manualmente ou de forma pré-definida (Aleatório, Retângulo, Círculo) e então calcula a envoltória convexa do conjunto de pontos em tempo real.
+O código implementa um programa interativo com um modo `Obstáculos` que permite ao usuário criar obstáculos manualmente (barreiras no grid), `Agente` que permite colocar um ponto de partida e chegada para um agente e então calcula o caminho que ele deve usar (caso seja possível) para chegar ao ponto de chegada em tempo real.
 
-Também é implementado uma forma geométrica (robô) que segue o mouse, e após criar formas geométricas usando pontos e sua envoltória, o programa realiza em tempo real a soma de Minkowski, gerando a "barreira de colisão" que indica os limites de movimentação do robô.
+Também é implementado um modo `Aleátorios` que gera vários agentes com aleátorios pontos de partida e chegada. E um modo `benchmark` que faz testes para acompanhar o desempenho do programa.
