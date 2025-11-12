@@ -6,7 +6,7 @@
 | 2 | 04/10/25, 16:33 | [LINK](trabalho-2) | Sim |
 | 3 | 18/10/25, 15:31 | [LINK](trabalho-3) | Sim |
 | 4 | 26/10/25, 18:36 | [LINK](trabalho-4) | Sim |
-| 5 | 12/11/25, xx:xx | [LINK](trabalho-5) | xxx |
+| 5 | 12/11/25, 11:59 | [LINK](trabalho-5) | Sim |
 | 6 |
 | 7 |
 | 8 |
