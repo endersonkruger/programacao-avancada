@@ -1,8 +1,7 @@
 use crate::agent::Agent;
 use macroquad::prelude::*;
 
-/// 📜 Trait base para Agentes e Decorators.
-/// Todos os componentes (Agente base ou decorado) devem implementar esta interface.
+/// Trait base para Agentes e Decorators.
 pub trait AgentComponent {
     fn update(&mut self, dt: f32);
     fn get_color(&self) -> Color;
@@ -10,7 +9,7 @@ pub trait AgentComponent {
     fn is_finished(&self) -> bool;
 }
 
-/// 🚀 Decorator Concreto: Aumento de Velocidade
+/// Decorator Concreto: Aumento de Velocidade
 /// Adiciona a funcionalidade de alterar a velocidade do agente base.
 pub struct SpeedBoostDecorator {
     /// O componente que está sendo decorado (Agent ou outro Decorator)
