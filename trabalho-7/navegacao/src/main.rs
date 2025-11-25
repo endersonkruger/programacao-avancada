@@ -47,8 +47,8 @@ enum InputMode {
 // Novo: Tipo de grid selecionado
 #[derive(PartialEq, Debug, Clone, Copy)]
 enum GridMode {
-    Cardinal4, // 4 direções
-    Diagonal8, // 8 direções
+    Cardinal,  // 4 direções
+    Diagonal,  // 8 direções
     Hexagonal, // 6 direções (hexagonal)
 }
 
@@ -88,11 +88,11 @@ fn calculate_path(
     path_manager.get_or_calculate(start, end, || {
         // Cria o Adapter apropriado
         match grid_mode {
-            GridMode::Cardinal4 => {
+            GridMode::Cardinal => {
                 let adapter = RectangularCardinalAdapter::new(grid);
                 a_star_with_adapter(&adapter, start, end)
             }
-            GridMode::Diagonal8 => {
+            GridMode::Diagonal => {
                 let adapter = RectangularDiagonalAdapter::new(grid);
                 a_star_with_adapter(&adapter, start, end)
             }
@@ -160,7 +160,7 @@ async fn main() {
     let mut grid = factory.create_grid(GRID_WIDTH, GRID_HEIGHT);
     let mut agents: Vec<Box<dyn AgentComponent>> = Vec::new();
     let mut mode = InputMode::DrawObstacle;
-    let mut grid_mode = GridMode::Cardinal4; // NOVO: modo do grid
+    let mut grid_mode = GridMode::Cardinal; // NOVO: modo do grid
     let mut pending_start: Option<(usize, usize)> = None;
     let mut benchmark_message = String::new();
 
@@ -209,9 +209,9 @@ async fn main() {
         // NOVO: [G] - Trocar modo do Grid (4-dir <-> 8-dir <-> Hexagonal)
         if is_key_pressed(KeyCode::G) {
             grid_mode = match grid_mode {
-                GridMode::Cardinal4 => GridMode::Diagonal8,
-                GridMode::Diagonal8 => GridMode::Hexagonal,
-                GridMode::Hexagonal => GridMode::Cardinal4,
+                GridMode::Cardinal => GridMode::Diagonal,
+                GridMode::Diagonal => GridMode::Hexagonal,
+                GridMode::Hexagonal => GridMode::Cardinal,
             };
 
             // Limpa cache ao trocar modo
