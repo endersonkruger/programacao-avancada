@@ -109,21 +109,3 @@ pub fn draw_input_feedback(
     // Desenha o "cursor" do grid
     draw_rectangle(x, y, cell_size, cell_size, color);
 }
-
-/// Desenha a Interface do Usuário (HUD) com textos de ajuda e status.
-pub fn draw_hud(mode: &InputMode, agent_count: usize, benchmark_msg: &str) {
-    // Formata os textos
-    let mode_text = format!("Modo: {:?}", mode);
-    let help_text = "[O] Obstáculos | [A] Agente | [R] Aleatórios | [C] Limpar | [B] Benchmark";
-    let agent_text = format!("Agentes: {}", agent_count);
-
-    // Desenha os textos na tela
-    draw_text(help_text, 10.0, 25.0, 24.0, WHITE);
-    draw_text(&mode_text, 10.0, 50.0, 24.0, YELLOW);
-    draw_text(&agent_text, 10.0, 75.0, 24.0, WHITE);
-
-    // Desenha a mensagem do benchmark (se existir)
-    if !benchmark_msg.is_empty() {
-        draw_text(benchmark_msg, 10.0, 105.0, 24.0, GREEN);
-    }
-}

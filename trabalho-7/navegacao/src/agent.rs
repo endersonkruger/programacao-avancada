@@ -1,5 +1,5 @@
 use crate::agent_decorator::AgentComponent;
-use macroquad::prelude::*; // <<< IMPORTADO
+use macroquad::prelude::*;
 
 /// Representa uma entidade móvel que segue um caminho no grid.
 pub struct Agent {
