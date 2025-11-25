@@ -4,14 +4,12 @@ use macroquad::prelude::*;
 mod agent;
 mod benchmark;
 mod grid;
-mod pathfinding;
 mod renderer;
 
 // --- Módulos de Fábrica ---
 mod abstract_factory;
 mod agent_factory;
 mod grid_factory;
-mod pathfinding_factory;
 
 // --- Módulos do Decorator ---
 mod agent_decorator;
@@ -29,9 +27,7 @@ use agent_decorator::{AgentComponent, SpeedBoostDecorator};
 use grid::{CellType, Grid};
 
 // NOVOS IMPORTS
-use grid_adapter::{
-    GridAdapter, HexagonalAdapter, RectangularCardinalAdapter, RectangularDiagonalAdapter,
-};
+use grid_adapter::{HexagonalAdapter, RectangularCardinalAdapter, RectangularDiagonalAdapter};
 use path_manager::PathManager;
 use pathfinding_adapter::a_star_with_adapter;
 

@@ -10,9 +10,6 @@ pub trait GridAdapter {
     /// Verifica se uma posição é válida e não é obstáculo
     fn is_valid_position(&self, pos: (usize, usize)) -> bool;
 
-    /// Retorna as dimensões do grid
-    fn dimensions(&self) -> (usize, usize);
-
     /// Calcula o custo de movimento entre duas células adjacentes
     fn movement_cost(&self, from: (usize, usize), to: (usize, usize)) -> usize;
 }
@@ -61,10 +58,6 @@ impl<'a> GridAdapter for RectangularCardinalAdapter<'a> {
 
     fn is_valid_position(&self, pos: (usize, usize)) -> bool {
         pos.0 < self.grid.width && pos.1 < self.grid.height && !self.grid.is_obstacle(pos.0, pos.1)
-    }
-
-    fn dimensions(&self) -> (usize, usize) {
-        (self.grid.width, self.grid.height)
     }
 
     fn movement_cost(&self, _from: (usize, usize), _to: (usize, usize)) -> usize {
@@ -121,10 +114,6 @@ impl<'a> GridAdapter for RectangularDiagonalAdapter<'a> {
 
     fn is_valid_position(&self, pos: (usize, usize)) -> bool {
         pos.0 < self.grid.width && pos.1 < self.grid.height && !self.grid.is_obstacle(pos.0, pos.1)
-    }
-
-    fn dimensions(&self) -> (usize, usize) {
-        (self.grid.width, self.grid.height)
     }
 
     fn movement_cost(&self, from: (usize, usize), to: (usize, usize)) -> usize {
@@ -228,10 +217,6 @@ impl<'a> GridAdapter for HexagonalAdapter<'a> {
 
     fn is_valid_position(&self, pos: (usize, usize)) -> bool {
         pos.0 < self.grid.width && pos.1 < self.grid.height && !self.grid.is_obstacle(pos.0, pos.1)
-    }
-
-    fn dimensions(&self) -> (usize, usize) {
-        (self.grid.width, self.grid.height)
     }
 
     fn movement_cost(&self, _from: (usize, usize), _to: (usize, usize)) -> usize {

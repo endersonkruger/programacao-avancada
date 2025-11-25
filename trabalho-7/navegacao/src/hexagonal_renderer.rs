@@ -6,7 +6,6 @@ use macroquad::prelude::*;
 /// Constantes para cálculos hexagonais (Flat-Top)
 const HEX_SIZE: f32 = 15.0; // Raio do hexágono (de centro a vértice)
 const HEX_WIDTH: f32 = HEX_SIZE * 1.73205; // Largura: √3 * size
-const HEX_HEIGHT: f32 = HEX_SIZE * 2.0; // Altura: 2 * size
 const VERTICAL_SPACING: f32 = HEX_SIZE * 1.5; // Espaçamento vertical: 1.5 * size
 
 /// Converte coordenadas de grid para posição central do hexágono em pixels
