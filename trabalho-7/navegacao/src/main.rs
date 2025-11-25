@@ -13,9 +13,12 @@ mod agent_factory;
 mod grid_factory;
 mod pathfinding_factory;
 
-use agent::Agent;
-use benchmark::run_benchmark;
+// --- Módulos do Decorator ---
+mod agent_decorator;
+
 use grid::{CellType, Grid};
+
+use agent_decorator::{AgentComponent, SpeedBoostDecorator};
 
 // Importa os novos tipos e contratos de fábrica
 use abstract_factory::{CardinalSimulationFactory, SimulationFactory};
@@ -53,10 +56,11 @@ fn grid_to_screen_center(pos: (usize, usize)) -> Vec2 {
 
 /// Gera `n` agentes com posições e destinos aleatórios.
 /// Usa PathfindingAlgorithm e AgentFactory para criar os componentes.
+/// Agora armazena Box<dyn AgentComponent> e decora com SpeedBoost.
 fn spawn_random_agents(
     n: usize,
     grid: &Grid,
-    agents: &mut Vec<Agent>,
+    agents: &mut Vec<Box<dyn AgentComponent>>,
     pathfinder: &dyn PathfindingAlgorithm,
     agent_creator: &dyn agent_factory::AgentFactory,
 ) {
@@ -65,24 +69,32 @@ fn spawn_random_agents(
         if let (Some(start_pos), Some(end_pos)) =
             (grid.get_random_empty_cell(), grid.get_random_empty_cell())
         {
-            // Usa o pathfinder da fábrica para calcular o caminho
+            // Usando a versão antiga (sem neighbor_finder) para compilar por enquanto:
             if let Some(path_nodes) = pathfinder.find_path(grid, start_pos, end_pos) {
                 let pixel_path = path_nodes.into_iter().map(grid_to_screen_center).collect();
                 let start_pixel_pos = grid_to_screen_center(start_pos);
 
-                // Usa a AgentFactory para criar o agente
-                agents.push(agent_creator.create_agent(start_pixel_pos, pixel_path, AGENT_SPEED));
+                // 1. Cria o agente base (vermelho)
+                let base_agent =
+                    agent_creator.create_agent(start_pixel_pos, pixel_path, AGENT_SPEED);
+
+                // 2. Decora o agente com o Speed Boost (Decorator)
+                let decorated_agent = SpeedBoostDecorator::new(base_agent, 2.0);
+
+                // 3. Adiciona o Decorator (como trait object) à lista
+                agents.push(Box::new(decorated_agent));
+
                 count += 1;
             }
         }
     }
-    println!("Gerado {} agentes aleatórios.", count);
+    println!("Gerado {} agentes aleatórios com Speed Boost (2x).", count);
 }
 
 /// Configurações da janela do Macroquad.
 fn window_conf() -> Conf {
     Conf {
-        window_title: "Trabalho 6 - FÁBRICAS - Pathfinding A*".to_owned(),
+        window_title: "Trabalho 7".to_owned(),
         window_width: (GRID_WIDTH as f32 * CELL_SIZE) as i32,
         window_height: (GRID_HEIGHT as f32 * CELL_SIZE + 50.0) as i32,
         fullscreen: false,
@@ -106,7 +118,7 @@ async fn main() {
     // --- 1. Estado da Aplicação ---
     // Cria o Grid usando a Fábrica Abstrata (que delega ao GridFactory)
     let mut grid = factory.create_grid(GRID_WIDTH, GRID_HEIGHT);
-    let mut agents: Vec<Agent> = Vec::new();
+    let mut agents: Vec<Box<dyn AgentComponent>> = Vec::new();
     let mut mode = InputMode::DrawObstacle;
     let mut pending_start: Option<(usize, usize)> = None; // Posição de início pendente
     let mut benchmark_message = String::new();
@@ -147,19 +159,16 @@ async fn main() {
                 20,
                 &grid,
                 &mut agents,
-                pathfinder.as_ref(),        // Passa o pathfinder
-                red_agent_creator.as_ref(), // Passa o agent_creator
+                pathfinder.as_ref(),
+                red_agent_creator.as_ref(), // Fábrica para agentes vermelhos
             );
             benchmark_message.clear();
         }
 
-        // [B] - Executar Benchmark
+        // [B] - Executar Benchmark (sem o Adapter, usa a versão antiga)
         if is_key_pressed(KeyCode::B) {
-            // Renderiza a tela antes de rodar o benchmark (que é longo)
             next_frame().await;
-
-            // Executa o benchmark (passando o pathfinder da Fábrica)
-            benchmark_message = run_benchmark(pathfinder.as_ref());
+            benchmark_message = benchmark::run_benchmark(pathfinder.as_ref());
         }
 
         // --- 2. Lógica de Input (Mouse) ---
@@ -187,29 +196,25 @@ async fn main() {
             }
 
             InputMode::SetEnd => {
-                // Define o ponto final se não for um obstáculo
                 if is_mouse_button_pressed(MouseButton::Left) && !grid.is_obstacle(grid_x, grid_y) {
                     if let Some(start_pos) = pending_start {
                         let end_pos = (grid_x, grid_y);
-                        println!(
-                            "Calculando caminho de ({}, {}) para ({}, {})",
-                            start_pos.0, start_pos.1, end_pos.0, end_pos.1
-                        );
 
-                        // Usa o pathfinder da Fábrica
+                        // Usando a versão antiga de find_path (sem neighbor_finder)
                         if let Some(path_nodes) = pathfinder.find_path(&grid, start_pos, end_pos) {
-                            println!("Caminho encontrado com {} passos.", path_nodes.len());
-
                             let pixel_path =
                                 path_nodes.into_iter().map(grid_to_screen_center).collect();
 
-                            // Cria o agente usando a AgentFactory
-                            let start_pixel_pos = grid_to_screen_center(start_pos);
-                            agents.push(blue_agent_creator.create_agent(
-                                start_pixel_pos,
+                            // 1. Cria o agente base (azul) usando a AgentFactory
+                            let base_agent = blue_agent_creator.create_agent(
+                                grid_to_screen_center(start_pos),
                                 pixel_path,
                                 AGENT_SPEED,
-                            ));
+                            );
+
+                            // 2. Adiciona o agente base à lista, empacotado como Box<dyn AgentComponent>
+                            // (SEM DECORATOR para agentes manuais)
+                            agents.push(Box::new(base_agent));
                         } else {
                             println!("Nenhum caminho encontrado.");
                         }

@@ -1,4 +1,5 @@
-use macroquad::prelude::*;
+use crate::agent_decorator::AgentComponent;
+use macroquad::prelude::*; // <<< IMPORTADO
 
 /// Representa uma entidade móvel que segue um caminho no grid.
 pub struct Agent {
@@ -23,7 +24,7 @@ impl Agent {
         }
     }
 
-    /// Atualiza a posição do agente
+    /// Atualiza a posição do agente (método base)
     pub fn update(&mut self, dt: f32) {
         if self.is_finished {
             return;
@@ -47,5 +48,25 @@ impl Agent {
             let direction = (target - self.pos).normalize_or_zero();
             self.pos += direction * self.speed * dt;
         }
+    }
+}
+
+/// Implementação do Trait AgentComponent para a estrutura base Agent
+impl AgentComponent for Agent {
+    // A implementação base do update chama o update original do Agent
+    fn update(&mut self, dt: f32) {
+        self.update(dt);
+    }
+
+    fn get_color(&self) -> Color {
+        self.color
+    }
+
+    fn get_pos(&self) -> Vec2 {
+        self.pos
+    }
+
+    fn is_finished(&self) -> bool {
+        self.is_finished
     }
 }
