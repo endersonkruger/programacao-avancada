@@ -14,19 +14,18 @@ mod grid_factory;
 // --- Módulos do Decorator ---
 mod agent_decorator;
 
-// --- NOVOS MÓDULOS: Singleton e Adapter ---
+// --- Singleton e Adapter ---
 mod grid_adapter; // ADAPTER
 mod path_manager; // SINGLETON
 mod pathfinding_adapter; // Pathfinding que usa o Adapter
 
-// --- NOVO: Renderização Hexagonal ---
+// --- Renderização Hexagonal ---
 mod hexagonal_renderer;
 
 use abstract_factory::{CardinalSimulationFactory, SimulationFactory};
 use agent_decorator::{AgentComponent, SpeedBoostDecorator};
 use grid::{CellType, Grid};
 
-// NOVOS IMPORTS
 use grid_adapter::{HexagonalAdapter, RectangularCardinalAdapter, RectangularDiagonalAdapter};
 use path_manager::PathManager;
 use pathfinding_adapter::a_star_with_adapter;
@@ -44,7 +43,7 @@ enum InputMode {
     SetEnd,
 }
 
-// Novo: Tipo de grid selecionado
+// Tipo de grid selecionado
 #[derive(PartialEq, Debug, Clone, Copy)]
 enum GridMode {
     Cardinal,  // 4 direções
@@ -142,7 +141,7 @@ fn spawn_random_agents(
 fn window_conf() -> Conf {
     // Aumenta a altura da janela para acomodar o HUD
     Conf {
-        window_title: "Trabalho 7".to_owned(),
+        window_title: "Trabalho 8".to_owned(),
         window_width: (GRID_WIDTH as f32 * CELL_SIZE) as i32,
         window_height: (GRID_HEIGHT as f32 * CELL_SIZE + 100.0) as i32,
         fullscreen: false,

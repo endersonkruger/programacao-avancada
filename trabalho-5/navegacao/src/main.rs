@@ -129,7 +129,7 @@ async fn main() {
 
         // [B] - Executar Benchmark
         if is_key_pressed(KeyCode::B) {
-            mode = InputMode::DrawObstacle; // Sai do modo de agente
+            mode = InputMode::DrawObstacle; // Entra no modo de obstáculo
             pending_start = None;
             benchmark_message = "Executando benchmark...".to_string();
 
@@ -141,7 +141,7 @@ async fn main() {
             renderer::draw_hud(&mode, agents.len(), &benchmark_message); // Passa a msg
             next_frame().await; // Espera o frame ser desenhado
 
-            // Executa o benchmark (pode demorar e "congelar" a app)
+            // Executa o benchmark (dá uma travada)
             benchmark_message = run_benchmark();
         }
 
