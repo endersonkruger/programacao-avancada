@@ -130,7 +130,6 @@ fn spawn_random_agents(
                     agent_creator.create_agent(start_pixel_pos, pixel_path, AGENT_SPEED, *next_id);
 
                 // 2. Aplica Decorator (SpeedBoost)
-                // Note o Box::new() envolvendo o base_agent
                 let mut decorated_agent = SpeedBoostDecorator::new(Box::new(base_agent), 2.0);
 
                 // 3. Adiciona Observer (RespawnHandler)
@@ -143,15 +142,12 @@ fn spawn_random_agents(
             }
         }
     }
-    println!(
-        "Gerado {} agentes aleatórios com Speed Boost e Observers.",
-        count
-    );
+    println!("Gerado {} agentes aleatórios", count);
 }
 
 fn window_conf() -> Conf {
     Conf {
-        window_title: "Trabalho 8 - Padrões de Projeto".to_owned(),
+        window_title: "Trabalho 8".to_owned(),
         window_width: (GRID_WIDTH as f32 * CELL_SIZE) as i32,
         window_height: (GRID_HEIGHT as f32 * CELL_SIZE + 100.0) as i32,
         fullscreen: false,
@@ -242,7 +238,7 @@ async fn main() {
             println!("Modo do Grid: {:?}", grid_mode);
         }
 
-        // --- NOVO: UNDO (Desfazer Movimento) ---
+        // --- UNDO (Desfazer Movimento) ---
         if is_key_pressed(KeyCode::Z) {
             command_manager.undo_last(&mut agents);
         }
@@ -304,8 +300,6 @@ async fn main() {
                 }
             }
         }
-
-        // --- UPDATE COM COMMAND PATTERN ---
 
         // 1. Atualiza lógica interna dos agentes (sem mover a posição ainda)
         for agent in &mut agents {

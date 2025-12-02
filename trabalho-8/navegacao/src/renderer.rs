@@ -39,7 +39,6 @@ pub fn draw_cells(grid: &Grid, cell_size: f32) {
 
 /// Desenha os agentes (círculos). A cor base é definida pela AgentFactory.
 pub fn draw_agents(agents: &Vec<Box<dyn AgentComponent>>) {
-    // <<< MUDANÇA AQUI
     for agent_component in agents {
         // Usa os métodos do trait
         let active_color = agent_component.get_color();

@@ -74,8 +74,7 @@ pub fn a_star_with_adapter(
         }
 
         // USA O ADAPTER para obter os vizinhos
-        // Esta é a grande vantagem: o algoritmo não precisa saber
-        // se está trabalhando com grid retangular, hexagonal, etc.
+        // O algoritmo não sabe se está trabalhando com grid retangular ou hexagonal.
         let neighbors = adapter.get_neighbors(current.pos);
 
         for neighbor_pos in neighbors {

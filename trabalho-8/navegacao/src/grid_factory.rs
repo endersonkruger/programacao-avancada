@@ -1,8 +1,7 @@
 use crate::grid::Grid;
 
 /// Contrato (Trait) para qualquer fábrica responsável por criar estruturas de Grid.
-/// Isso permite a criação de diferentes tipos de grid (ex: hexagonal, custo variável)
-/// sem alterar o código que os utiliza.
+/// Isso permite a criação de diferentes tipos de grid sem alterar o código que os utiliza.
 pub trait GridFactory {
     /// Cria e retorna uma nova instância de Grid.
     fn create(&self, width: usize, height: usize) -> Grid;

@@ -11,8 +11,6 @@ pub struct Agent {
     speed: f32,
     pub is_finished: bool,
     pub color: Color,
-
-    // --- Novos Campos ---
     pub fuel: f32,
     observers: Vec<Box<dyn Observer>>,
 
@@ -47,9 +45,6 @@ impl Agent {
 
 impl AgentComponent for Agent {
     fn update(&mut self, dt: f32) {
-        // CORREÇÃO: Calculamos o passo aqui.
-        // Se este agente estiver dentro de um SpeedBoostDecorator, o 'dt'
-        // recebido aqui já estará multiplicado por 2.0 (ou outro fator).
         self.current_step_size = self.speed * dt;
 
         if self.fuel <= 0.0 {
@@ -72,10 +67,8 @@ impl AgentComponent for Agent {
         let target = self.path[self.current_waypoint];
         let distance = self.pos.distance(target);
 
-        // Se está muito perto do waypoint, avança (lógica simplificada de transição)
+        // Se está muito perto do waypoint, avança
         if distance < 5.0 {
-            // Se fosse um sistema robusto, retornaríamos o waypoint exato para evitar "cortar caminho",
-            // mas aqui retornamos o próximo alvo.
             return if self.current_waypoint + 1 < self.path.len() {
                 Some(self.path[self.current_waypoint + 1])
             } else {
@@ -83,7 +76,6 @@ impl AgentComponent for Agent {
             };
         }
 
-        // CORREÇÃO: Usa self.current_step_size em vez de valor fixo
         let direction = (target - self.pos).normalize_or_zero();
 
         // Retorna a posição desejada baseada na velocidade/boost atual
