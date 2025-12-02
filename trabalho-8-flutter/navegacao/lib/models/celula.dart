@@ -1,1 +1,0 @@
-enum Celula { vazio, obstaculo }

@@ -3,9 +3,9 @@ use macroquad::prelude::*;
 
 /// Contrato (Trait) para qualquer fábrica responsável por criar agentes.
 pub trait AgentFactory {
-    /// Cria e retorna uma nova instância de Agent, delegando a responsabilidade
-    /// de definir as características (como a cor) à implementação concreta.
-    fn create_agent(&self, start_pos: Vec2, path: Vec<Vec2>, speed: f32) -> Agent;
+    /// Cria e retorna uma nova instância de Agent.
+    /// Atualizado para receber 'id' necessário para o Command/Observer pattern.
+    fn create_agent(&self, start_pos: Vec2, path: Vec<Vec2>, speed: f32, id: usize) -> Agent;
 }
 
 // --- Fábricas Concretas ---
@@ -14,9 +14,9 @@ pub trait AgentFactory {
 pub struct BlueAgentFactory;
 
 impl AgentFactory for BlueAgentFactory {
-    fn create_agent(&self, start_pos: Vec2, path: Vec<Vec2>, speed: f32) -> Agent {
-        // Usa a cor AZUL sólida na criação
-        Agent::new(start_pos, path, speed, BLUE)
+    fn create_agent(&self, start_pos: Vec2, path: Vec<Vec2>, speed: f32, id: usize) -> Agent {
+        // Passa o ID e a cor AZUL para o construtor do Agente
+        Agent::new(id, start_pos, path, speed, BLUE)
     }
 }
 
@@ -24,8 +24,8 @@ impl AgentFactory for BlueAgentFactory {
 pub struct RedAgentFactory;
 
 impl AgentFactory for RedAgentFactory {
-    fn create_agent(&self, start_pos: Vec2, path: Vec<Vec2>, speed: f32) -> Agent {
-        // Usa a cor VERMELHA sólida na criação
-        Agent::new(start_pos, path, speed, RED)
+    fn create_agent(&self, start_pos: Vec2, path: Vec<Vec2>, speed: f32, id: usize) -> Agent {
+        // Passa o ID e a cor VERMELHA para o construtor do Agente
+        Agent::new(id, start_pos, path, speed, RED)
     }
 }

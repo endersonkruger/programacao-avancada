@@ -1,72 +1,132 @@
 use crate::agent_decorator::AgentComponent;
+use crate::observer::{AgentEvent, Observer};
 use macroquad::prelude::*;
 
 /// Representa uma entidade móvel que segue um caminho no grid.
 pub struct Agent {
-    pub pos: Vec2,           // Posição atual em pixels
-    path: Vec<Vec2>,         // Caminho a seguir (em pixels)
-    current_waypoint: usize, // Índice do próximo ponto no caminho
-    speed: f32,              // Velocidade de movimento (pixels/seg)
-    pub is_finished: bool,   // Se o agente chegou ao destino
-    pub color: Color,        // Cor do agente, definida pela Fábrica
+    pub id: usize,
+    pub pos: Vec2,
+    path: Vec<Vec2>,
+    current_waypoint: usize,
+    speed: f32,
+    pub is_finished: bool,
+    pub color: Color,
+
+    // --- Novos Campos ---
+    pub fuel: f32,
+    observers: Vec<Box<dyn Observer>>,
+
+    // Armazena o quanto o agente deve andar neste frame.
+    // Isso é calculado no update() e usado no get_next_step_target().
+    current_step_size: f32,
 }
 
 impl Agent {
-    /// Construtor que recebe a cor como argumento, definida pela AgentFactory.
-    pub fn new(start_pos: Vec2, path: Vec<Vec2>, speed: f32, color: Color) -> Self {
+    /// Construtor atualizado
+    pub fn new(id: usize, start_pos: Vec2, path: Vec<Vec2>, speed: f32, color: Color) -> Self {
         Self {
+            id,
             pos: start_pos,
             path,
             current_waypoint: 0,
             speed,
             is_finished: false,
             color,
+            fuel: 500.0,
+            observers: Vec::new(),
+            current_step_size: 0.0, // Inicializa com 0
         }
     }
 
-    /// Atualiza a posição do agente (método base)
-    pub fn update(&mut self, dt: f32) {
-        if self.is_finished {
-            return;
-        }
-
-        // Se não há mais pontos no caminho, marca como finalizado
-        if self.current_waypoint >= self.path.len() {
-            self.is_finished = true;
-            return;
-        }
-
-        // Pega o próximo ponto do caminho
-        let target = self.path[self.current_waypoint];
-        let distance_to_target = self.pos.distance(target);
-
-        // Se está perto o suficiente, avança para o próximo ponto
-        if distance_to_target < 5.0 {
-            self.current_waypoint += 1;
-        } else {
-            // Calcula a direção e move o agente, usando dt para estabilizar a velocidade
-            let direction = (target - self.pos).normalize_or_zero();
-            self.pos += direction * self.speed * dt;
+    fn notify_observers(&self, event: AgentEvent) {
+        for obs in &self.observers {
+            obs.on_notify(self.id, event.clone());
         }
     }
 }
 
-/// Implementação do Trait AgentComponent para a estrutura base Agent
 impl AgentComponent for Agent {
-    // A implementação base do update chama o update original do Agent
     fn update(&mut self, dt: f32) {
-        self.update(dt);
+        // CORREÇÃO: Calculamos o passo aqui.
+        // Se este agente estiver dentro de um SpeedBoostDecorator, o 'dt'
+        // recebido aqui já estará multiplicado por 2.0 (ou outro fator).
+        self.current_step_size = self.speed * dt;
+
+        if self.fuel <= 0.0 {
+            if self.fuel > -1.0 {
+                self.notify_observers(AgentEvent::OutOfFuel);
+                self.fuel = -10.0;
+            }
+            return;
+        }
+    }
+
+    fn get_next_step_target(&self) -> Option<Vec2> {
+        if self.is_finished || self.fuel <= 0.0 {
+            return None;
+        }
+        if self.current_waypoint >= self.path.len() {
+            return None;
+        }
+
+        let target = self.path[self.current_waypoint];
+        let distance = self.pos.distance(target);
+
+        // Se está muito perto do waypoint, avança (lógica simplificada de transição)
+        if distance < 5.0 {
+            // Se fosse um sistema robusto, retornaríamos o waypoint exato para evitar "cortar caminho",
+            // mas aqui retornamos o próximo alvo.
+            return if self.current_waypoint + 1 < self.path.len() {
+                Some(self.path[self.current_waypoint + 1])
+            } else {
+                None
+            };
+        }
+
+        // CORREÇÃO: Usa self.current_step_size em vez de valor fixo
+        let direction = (target - self.pos).normalize_or_zero();
+
+        // Retorna a posição desejada baseada na velocidade/boost atual
+        Some(self.pos + direction * self.current_step_size)
+    }
+
+    fn set_pos(&mut self, pos: Vec2) {
+        self.pos = pos;
+
+        // Verifica se chegou no waypoint atual após o movimento
+        if self.current_waypoint < self.path.len() {
+            if self.pos.distance(self.path[self.current_waypoint]) < 5.0 {
+                self.current_waypoint += 1;
+                if self.current_waypoint >= self.path.len() {
+                    self.is_finished = true;
+                    self.notify_observers(AgentEvent::Finished);
+                }
+            }
+        }
     }
 
     fn get_color(&self) -> Color {
-        self.color
+        if self.fuel <= 0.0 { GRAY } else { self.color }
     }
 
     fn get_pos(&self) -> Vec2 {
         self.pos
     }
-
     fn is_finished(&self) -> bool {
         self.is_finished
+    }
+    fn get_id(&self) -> usize {
+        self.id
+    }
+
+    fn consume_fuel(&mut self, amount: f32) {
+        self.fuel -= amount;
+    }
+    fn restore_fuel(&mut self, amount: f32) {
+        self.fuel += amount;
+    }
+
+    fn add_observer(&mut self, observer: Box<dyn Observer>) {
+        self.observers.push(observer);
     }
 }

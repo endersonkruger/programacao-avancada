@@ -1,12 +1,34 @@
-use crate::agent::Agent;
+use crate::observer::Observer;
 use macroquad::prelude::*;
 
 /// Trait base para Agentes e Decorators.
+/// Atualizado para suportar Command Pattern (movimentação controlada) e Observer Pattern (eventos).
 pub trait AgentComponent {
+    // --- Métodos Básicos (Existentes) ---
     fn update(&mut self, dt: f32);
     fn get_color(&self) -> Color;
     fn get_pos(&self) -> Vec2;
     fn is_finished(&self) -> bool;
+
+    // --- Métodos para o Command Pattern ---
+    /// Define a posição diretamente (usado pelo MoveCommand e Undo)
+    fn set_pos(&mut self, pos: Vec2);
+
+    /// Retorna o ID único do agente (para saber quem o comando afeta)
+    fn get_id(&self) -> usize;
+
+    /// Calcula onde o agente DESEJA ir no próximo passo (sem se mover ainda)
+    fn get_next_step_target(&self) -> Option<Vec2>;
+
+    // --- Métodos para o Observer Pattern e Estado ---
+    /// Consome combustível/energia
+    fn consume_fuel(&mut self, amount: f32);
+
+    /// Restaura combustível (usado no Undo ou recarga)
+    fn restore_fuel(&mut self, amount: f32);
+
+    /// Registra um observador para escutar eventos deste agente
+    fn add_observer(&mut self, observer: Box<dyn Observer>);
 }
 
 /// Decorator Concreto: Aumento de Velocidade
@@ -21,22 +43,20 @@ pub struct SpeedBoostDecorator {
 }
 
 impl SpeedBoostDecorator {
-    pub fn new(agent: Agent, multiplier: f32) -> Self {
+    /// Cria um novo decorator.
+    /// Nota: Agora aceita Box<dyn AgentComponent> para permitir decorar outros decorators se necessário.
+    pub fn new(component: Box<dyn AgentComponent>, multiplier: f32) -> Self {
         Self {
-            // Empacota o agente base em um Box para o trait object
-            component: Box::new(agent),
+            component,
             speed_multiplier: multiplier,
             is_boost_active: true,
         }
     }
-
-    // Método para ativar/desativar o boost em tempo real.
-    // pub fn toggle_boost(&mut self) {
-    //     self.is_boost_active = !self.is_boost_active;
-    // }
 }
 
 /// Implementação do Trait AgentComponent para o Decorator
+/// O Decorator deve repassar (delegate) todas as chamadas para o componente interno,
+/// modificando apenas o comportamento desejado (neste caso, o tempo/velocidade).
 impl AgentComponent for SpeedBoostDecorator {
     fn update(&mut self, dt: f32) {
         // Se o boost está ativo, altera o Delta Time (dt) efetivo.
@@ -50,7 +70,8 @@ impl AgentComponent for SpeedBoostDecorator {
         self.component.update(effective_dt);
     }
 
-    // Métodos delegados
+    // --- Pass-throughs (Delegações Diretas) ---
+
     fn get_color(&self) -> Color {
         self.component.get_color()
     }
@@ -61,5 +82,31 @@ impl AgentComponent for SpeedBoostDecorator {
 
     fn is_finished(&self) -> bool {
         self.component.is_finished()
+    }
+
+    fn set_pos(&mut self, pos: Vec2) {
+        self.component.set_pos(pos);
+    }
+
+    fn get_id(&self) -> usize {
+        self.component.get_id()
+    }
+
+    fn get_next_step_target(&self) -> Option<Vec2> {
+        self.component.get_next_step_target()
+    }
+
+    fn consume_fuel(&mut self, amount: f32) {
+        // Opcional: Se a velocidade aumenta, o consumo poderia aumentar também?
+        // Por enquanto, apenas repassa o valor original.
+        self.component.consume_fuel(amount);
+    }
+
+    fn restore_fuel(&mut self, amount: f32) {
+        self.component.restore_fuel(amount);
+    }
+
+    fn add_observer(&mut self, observer: Box<dyn Observer>) {
+        self.component.add_observer(observer);
     }
 }
