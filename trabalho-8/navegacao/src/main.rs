@@ -370,7 +370,7 @@ fn draw_hud_extended(
 ) {
     let mode_text = format!("Modo: {:?}", mode);
     let grid_mode_text = format!("Grid: {:?}", grid_mode);
-    let help_text = "[O] Obst | [A] Agente | [R] Random | [C] Clear | [G] Grid | [Z] Undo";
+    let help_text = "[O] Obstáculo | [A] Agente | [R] Random | [C] Clear | [G] Grid | [Z] Desfazer";
     let agent_text = format!("Agentes: {}", agent_count);
 
     draw_text(help_text, 10.0, 25.0, 20.0, WHITE);
