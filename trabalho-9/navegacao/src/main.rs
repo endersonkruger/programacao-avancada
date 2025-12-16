@@ -124,17 +124,23 @@ fn spawn_random_agents(
                     .collect();
                 let start_pixel_pos = grid_to_screen_center(start_pos, grid_mode);
 
-                // 1. Cria Agente Base (Factory) - Passando ID
+                // 1. Cria Agente Base (Factory)
                 let base_agent =
                     agent_creator.create_agent(start_pixel_pos, pixel_path, AGENT_SPEED, *next_id);
 
-                // 2. Aplica Decorator (SpeedBoost)
-                let mut decorated_agent = SpeedBoostDecorator::new(Box::new(base_agent), 2.0);
+                // 2. Aplica Decorator de Velocidade
+                let speed_agent = SpeedBoostDecorator::new(Box::new(base_agent), 2.0);
 
-                // 3. Adiciona Observer (RespawnHandler)
-                decorated_agent.add_observer(Box::new(RespawnHandler));
+                // 3. Aplica Decorator Visual (Envolve o de velocidade)
+                // O 'speed_agent' é movido para dentro daqui
+                let mut visual_agent =
+                    agent_decorator::VisualAlertDecorator::new(Box::new(speed_agent));
 
-                agents.push(Box::new(decorated_agent));
+                // 4. Adiciona Observer na camada mais externa
+                visual_agent.add_observer(Box::new(RespawnHandler));
+
+                // 5. Guarda na lista
+                agents.push(Box::new(visual_agent));
 
                 *next_id += 1;
                 count += 1;
@@ -251,14 +257,15 @@ async fn main() {
                 if is_mouse_button_pressed(MouseButton::Left) && !grid.is_obstacle(grid_x, grid_y) {
                     if let Some(start_pos) = pending_start {
                         let end_pos = (grid_x, grid_y);
-                        if let Some(path_nodes) =
-                            calculate_path(&grid, start_pos, end_pos, grid_mode)
-                        {
+
+                        // Calcula o caminho
+                        if let Some(path_nodes) = calculate_path(&grid, start_pos, end_pos, grid_mode) {
                             let pixel_path = path_nodes
                                 .into_iter()
                                 .map(|pos| grid_to_screen_center(pos, grid_mode))
                                 .collect();
 
+                            // 1. Cria o Agente Base
                             let base_agent = blue_agent_creator.create_agent(
                                 grid_to_screen_center(start_pos, grid_mode),
                                 pixel_path,
@@ -266,10 +273,18 @@ async fn main() {
                                 next_agent_id,
                             );
 
-                            let mut boxed_agent: Box<dyn AgentComponent> = Box::new(base_agent);
-                            boxed_agent.add_observer(Box::new(RespawnHandler));
+                            // 2. Adiciona Velocidade (opcional, para manter igual aos outros)
+                            let speed_agent = SpeedBoostDecorator::new(Box::new(base_agent), 2.0);
 
-                            agents.push(boxed_agent);
+                            // 3. Adiciona o Decorator Visual
+                            let mut visual_agent = agent_decorator::VisualAlertDecorator::new(Box::new(speed_agent));
+
+                            // 4. Adiciona o Observer na camada mais externa
+                            visual_agent.add_observer(Box::new(RespawnHandler));
+
+                            // 5. Adiciona à lista
+                            agents.push(Box::new(visual_agent));
+
                             next_agent_id += 1;
                         } else {
                             println!("Nenhum caminho encontrado.");
@@ -286,7 +301,6 @@ async fn main() {
             agent.update(dt);
         }
 
-        // --- DETECÇÃO DE COLISÃO (SNAPSHOT) ---
         // Cria snapshot dos estados para leitura segura (evita problema de borrow checker)
         let agent_states: Vec<(usize, Vec2, f32, f32)> = agents
             .iter()
@@ -303,7 +317,7 @@ async fn main() {
             if let Some(target_pos) = agent.get_next_step_target() {
                 let current_pos = agent.get_pos();
                 let id = agent.get_id();
-                
+
                 // Dados do agente atual
                 let my_phys_r = agent.get_physical_radius();
                 let my_det_r = agent.get_detection_radius();
@@ -316,7 +330,7 @@ async fn main() {
 
                     let dist = target_pos.distance(*other_pos);
                     let sum_physical = my_phys_r + other_phys_r;
-                    let sum_detection = my_det_r + other_phys_r; // Meu sensor vs corpo dele
+                    let sum_detection = my_det_r + other_phys_r;
 
                     if dist < sum_physical {
                         // Colisão Física (Durante)
@@ -327,7 +341,6 @@ async fn main() {
                     }
                 }
 
-                // Cria o comando independente da colisão (Apenas detecta, não trata)
                 let move_cmd = MoveCommand::new(id, current_pos, target_pos);
                 command_manager.add_command(Box::new(move_cmd));
             }

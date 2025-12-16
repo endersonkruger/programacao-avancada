@@ -134,7 +134,6 @@ impl<'a> GridAdapter for RectangularDiagonalAdapter<'a> {
 /// Em grids hexagonais, cada célula tem 6 vizinhos
 pub struct HexagonalAdapter<'a> {
     grid: &'a Grid,
-    /// Define se usamos "flat-top" ou "pointy-top" hexagons
     flat_top: bool,
 }
 

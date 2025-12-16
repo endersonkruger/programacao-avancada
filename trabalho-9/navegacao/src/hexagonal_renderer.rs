@@ -1,6 +1,6 @@
-use crate::InputMode;
 use crate::agent_decorator::AgentComponent;
 use crate::grid::{CellType, Grid};
+use crate::InputMode;
 use macroquad::prelude::*;
 
 /// Constantes para cálculos hexagonais (Flat-Top)
@@ -27,12 +27,6 @@ pub fn hex_grid_to_screen(pos: (usize, usize)) -> Vec2 {
 
 /// Converte coordenadas de tela para coordenadas de grid hexagonal
 pub fn hex_screen_to_grid(screen_x: f32, screen_y: f32) -> (usize, usize) {
-    // 1. Converte a coordenada da tela para a coordenada "axial" (q, r)
-    // q = (screen_x * 2/3) / HEX_SIZE
-    // r = (-screen_x / 3 + screen_y * sqrt(3)/3) / HEX_SIZE
-
-    // Tentativa simplificada de "axial coordinate" para flat-top
-    // Esta aproximação é melhor que a puramente retangular.
     let q_approx = (screen_x - HEX_WIDTH / 2.0) / HEX_WIDTH;
     let r_approx = screen_y / VERTICAL_SPACING;
 
@@ -65,8 +59,7 @@ pub fn hex_screen_to_grid(screen_x: f32, screen_y: f32) -> (usize, usize) {
     closest_pos
 }
 
-/// Desenha um hexágono "flat-top" (topo achatado)
-/// Nota: O desenho do hexágono foi mantido do seu código original, mas o cálculo de `hex_grid_to_screen` garante o posicionamento correto.
+/// Desenha um hexágono
 pub fn draw_hexagon(cx: f32, cy: f32, size: f32, color: Color, filled: bool) {
     // Offset de -30 graus (ou 330) para flat-top
     let angles: [f32; 6] = [30.0, 90.0, 150.0, 210.0, 270.0, 330.0];
@@ -124,17 +117,20 @@ pub fn draw_hexagonal_cells(grid: &Grid) {
 
 /// Desenha os agentes no grid hexagonal
 pub fn draw_hexagonal_agents(agents: &Vec<Box<dyn AgentComponent>>) {
-    for agent_component in agents {
-        let active_color = agent_component.get_color();
+    for agent in agents {
+        let pos = agent.get_pos();
 
-        let color = if agent_component.is_finished() {
-            Color::new(0.0, 1.0, 0.0, 0.5)
-        } else {
-            active_color
-        };
+        let detection_color = agent.get_detection_color();
 
-        let pos = agent_component.get_pos();
-        draw_circle(pos.x, pos.y, HEX_SIZE * 0.4, color);
+        draw_circle_lines(
+            pos.x,
+            pos.y,
+            agent.get_detection_radius(),
+            2.0,
+            detection_color,
+        );
+
+        draw_circle(pos.x, pos.y, agent.get_physical_radius(), agent.get_color());
     }
 }
 

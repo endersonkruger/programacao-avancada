@@ -2,11 +2,9 @@ use crate::agent_decorator::AgentComponent;
 use crate::observer::{AgentEvent, Observer};
 use macroquad::prelude::*;
 
-// Constantes de tamanho para colisão
-const PHYSICAL_RADIUS: f32 = 8.0; // Raio do corpo (Colisão real)
-const DETECTION_RADIUS: f32 = 18.0; // Raio do sensor (Colisão prevista)
+const PHYSICAL_RADIUS: f32 = 8.0;
+const DETECTION_RADIUS: f32 = 18.0;
 
-/// Representa uma entidade móvel que segue um caminho no grid.
 pub struct Agent {
     pub id: usize,
     pub pos: Vec2,
@@ -30,12 +28,13 @@ impl Agent {
             speed,
             is_finished: false,
             color,
-            fuel: 500.0,
+            fuel: 2000.0,
             observers: Vec::new(),
             current_step_size: 0.0,
         }
     }
 
+    // Método auxiliar interno
     fn notify_observers(&self, event: AgentEvent) {
         for obs in &self.observers {
             obs.on_notify(self.id, event.clone());
@@ -110,28 +109,24 @@ impl AgentComponent for Agent {
     fn get_id(&self) -> usize {
         self.id
     }
-
     fn consume_fuel(&mut self, amount: f32) {
         self.fuel -= amount;
     }
     fn restore_fuel(&mut self, amount: f32) {
         self.fuel += amount;
     }
-
     fn add_observer(&mut self, observer: Box<dyn Observer>) {
         self.observers.push(observer);
     }
 
-    // --- Implementação dos novos métodos ---
-
     fn get_physical_radius(&self) -> f32 {
         PHYSICAL_RADIUS
     }
-
     fn get_detection_radius(&self) -> f32 {
         DETECTION_RADIUS
     }
 
+    // Implementação base de notify apenas avisa os observers
     fn notify(&self, event: AgentEvent) {
         self.notify_observers(event);
     }

@@ -3,8 +3,8 @@
 pub enum AgentEvent {
     OutOfFuel,             // O agente ficou sem energia
     Finished,              // O agente chegou ao destino
-    ProximityAlert(usize), // [NOVO] Sensor detectou algo (Antes de bater)
-    CollisionHit(usize),   // [NOVO] Colisão física (Durante a batida)
+    ProximityAlert(usize), // Sensor detectou algo (Antes de bater)
+    CollisionHit(usize),   // Colisão física (Durante a batida)
 }
 
 /// Interface para quem quer escutar eventos (Observer)
@@ -27,16 +27,15 @@ impl Observer for RespawnHandler {
             AgentEvent::Finished => {
                 println!("[OBSERVER] Agente {} chegou ao destino.", agent_id);
             }
-            // --- NOVOS LOGS DE DETECÇÃO ---
             AgentEvent::ProximityAlert(other_id) => {
                 println!(
-                    "⚠️ [SENSOR] Agente {} detectou risco de colisão com Agente {}",
+                    "[SENSOR] Agente {} detectou risco de colisão com Agente {}",
                     agent_id, other_id
                 );
             }
             AgentEvent::CollisionHit(other_id) => {
                 println!(
-                    "💥 [COLISÃO] Agente {} colidiu fisicamente com Agente {}",
+                    "[COLISÃO] Agente {} colidiu fisicamente com Agente {}",
                     agent_id, other_id
                 );
             }

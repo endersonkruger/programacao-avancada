@@ -1,6 +1,6 @@
 use crate::agent_decorator::AgentComponent;
 use crate::grid::{CellType, Grid};
-use crate::{CELL_SIZE, InputMode};
+use crate::{InputMode, CELL_SIZE};
 use macroquad::prelude::*;
 
 /// Desenha as linhas de grade (cinza claro)
@@ -38,20 +38,22 @@ pub fn draw_cells(grid: &Grid, cell_size: f32) {
 }
 
 /// Desenha os agentes (círculos). A cor base é definida pela AgentFactory.
-pub fn draw_agents(agents: &Vec<Box<dyn AgentComponent>>) {
-    for agent_component in agents {
-        // Usa os métodos do trait
-        let active_color = agent_component.get_color();
+pub fn draw_agents(agents: &[Box<dyn AgentComponent>]) {
+    for agent in agents {
+        let pos = agent.get_pos();
 
-        let color = if agent_component.is_finished() {
-            // Agente finalizado fica verde e levemente transparente
-            Color::new(0.0, 1.0, 0.0, 0.5)
-        } else {
-            // Agente ativo usa a cor definida pela fábrica
-            active_color
-        };
-        let pos = agent_component.get_pos();
-        draw_circle(pos.x, pos.y, CELL_SIZE * 0.35, color);
+        // Pede a cor dinâmica ao agente (que passará pelo Decorator)
+        let detection_color = agent.get_detection_color();
+
+        draw_circle_lines(
+            pos.x,
+            pos.y,
+            agent.get_detection_radius(),
+            2.0,
+            detection_color,
+        );
+
+        draw_circle(pos.x, pos.y, agent.get_physical_radius(), agent.get_color());
     }
 }
 

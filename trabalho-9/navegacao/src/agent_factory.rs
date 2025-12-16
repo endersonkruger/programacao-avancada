@@ -26,6 +26,6 @@ pub struct RedAgentFactory;
 impl AgentFactory for RedAgentFactory {
     fn create_agent(&self, start_pos: Vec2, path: Vec<Vec2>, speed: f32, id: usize) -> Agent {
         // Passa o ID e a cor VERMELHA para o construtor do Agente
-        Agent::new(id, start_pos, path, speed, RED)
+        Agent::new(id, start_pos, path, speed, BROWN)
     }
 }
