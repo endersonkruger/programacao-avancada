@@ -168,6 +168,7 @@ fn window_conf() -> Conf {
 
 #[macroquad::main(window_conf)]
 async fn main() {
+    let mut benchmark_manager = benchmark::BenchmarkManager::new();
     // --- 1. CHAIN OF RESPONSIBILITY: Inicialização ---
     let init_ctx = init_system(GRID_WIDTH, GRID_HEIGHT);
 
@@ -241,6 +242,47 @@ async fn main() {
             command_manager.undo_last(&mut agents);
         }
 
+        /// BENCHMARKS
+        if is_key_pressed(KeyCode::Key1) {
+            grid.clear();
+            agents.clear();
+            benchmark::spawn_opposing_rows(
+                &grid,
+                &mut agents,
+                blue_agent_creator.as_ref(),
+                grid_mode,
+                &mut next_agent_id,
+            );
+            benchmark_manager.start_test("1_Row_Opposing");
+        }
+        if is_key_pressed(KeyCode::Key2) {
+            grid.clear();
+            agents.clear();
+            benchmark::spawn_double_opposing_rows(
+                &grid,
+                &mut agents,
+                blue_agent_creator.as_ref(),
+                grid_mode,
+                &mut next_agent_id,
+            );
+            benchmark_manager.start_test("2_Rows_Opposing");
+        }
+        if is_key_pressed(KeyCode::Key3) {
+            grid.clear();
+            agents.clear();
+            benchmark::spawn_random_scenario(
+                &grid,
+                &mut agents,
+                blue_agent_creator.as_ref(),
+                grid_mode,
+                &mut next_agent_id,
+                100,
+            );
+            benchmark_manager.start_test("Random_100");
+        }
+
+        // Chame o update do benchmark antes de next_frame()
+        benchmark_manager.update(agents.len());
         // --- Input (Mouse) ---
         match mode {
             InputMode::DrawObstacle => {
