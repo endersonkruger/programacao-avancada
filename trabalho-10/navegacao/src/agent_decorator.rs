@@ -33,12 +33,10 @@ pub trait AgentComponent {
     }
 }
 
-/// --- DECORATOR 1: SpeedBoostDecorator (Reativo) ---
-/// Mantém uma velocidade base, mas muda aleatoriamente ao detectar perigo.
+/// --- DECORATOR 1: SpeedBoostDecorator ---
 pub struct SpeedBoostDecorator {
     pub component: Box<dyn AgentComponent>,
-    base_multiplier: f32, // Velocidade padrão (ex: 1.0 ou 2.0)
-    // State: (Timer Restante, Multiplicador Atual)
+    base_multiplier: f32,
     state: RefCell<(f32, f32)>,
 }
 
@@ -47,7 +45,6 @@ impl SpeedBoostDecorator {
         Self {
             component,
             base_multiplier,
-            // Começa com timer 0 e usando a velocidade base
             state: RefCell::new((0.0, base_multiplier)),
         }
     }
@@ -57,18 +54,14 @@ impl AgentComponent for SpeedBoostDecorator {
     fn update(&mut self, dt: f32) {
         let mut state = self.state.borrow_mut();
 
-        // Decrementa o timer se estiver ativo
         if state.0 > 0.0 {
             state.0 -= dt;
-            // Se o tempo acabou neste frame, reseta para a velocidade base
             if state.0 <= 0.0 {
                 state.1 = self.base_multiplier;
             }
         }
 
         let current_multiplier = state.1;
-
-        // Aplica o multiplicador ao delta time (simulando mudança de velocidade)
         let effective_dt = dt * current_multiplier;
 
         self.component.update(effective_dt);
@@ -79,13 +72,13 @@ impl AgentComponent for SpeedBoostDecorator {
             AgentEvent::ProximityAlert(_) => {
                 let mut state = self.state.borrow_mut();
 
-                // Se não estiver já em "modo pânico" (timer zerado), ativa um novo
+                // Só ativa se já não estiver em pânico (para evitar resetar o timer a cada frame)
                 if state.0 <= 0.0 {
-                    // 1. Tempo aleatório entre 0.5s e 2.0s
-                    let duration = rand::gen_range(0.5, 2.0);
+                    // Duração curta: 0.2s a 0.5s
+                    let duration = rand::gen_range(0.2, 0.5);
 
-                    // 2. Velocidade aleatória: pode frear bruscamente (0.2x) ou acelerar muito (3.0x)
-                    let random_speed = rand::gen_range(0.2, 3.0);
+                    // Velocidade: 0.5xaté 1.4x
+                    let random_speed = rand::gen_range(0.5, 1.4);
 
                     *state = (duration, random_speed);
                 }
@@ -134,11 +127,9 @@ impl AgentComponent for SpeedBoostDecorator {
     }
 }
 
-/// --- DECORATOR 2: DirectionDeviateDecorator (Novo) ---
-/// Desvia a direção do agente aleatoriamente quando há risco de colisão.
+/// --- DECORATOR 2: DirectionDeviateDecorator ---
 pub struct DirectionDeviateDecorator {
     component: Box<dyn AgentComponent>,
-    // State: (Timer Restante, Vetor de Desvio X, Vetor de Desvio Y)
     state: RefCell<(f32, Vec2)>,
 }
 
@@ -165,12 +156,12 @@ impl AgentComponent for DirectionDeviateDecorator {
             AgentEvent::ProximityAlert(_) => {
                 let mut state = self.state.borrow_mut();
                 if state.0 <= 0.0 {
-                    // Define duração do desvio (ex: 1 segundo)
-                    let duration = rand::gen_range(0.5, 1.5);
+                    // Duração do desvio: 0.1s a 0.3s
+                    let duration = rand::gen_range(0.1, 0.3);
 
-                    // Define um vetor de "jitter" forte para tirar o agente do caminho
-                    let jx = rand::gen_range(-15.0, 15.0);
-                    let jy = rand::gen_range(-15.0, 15.0);
+                    // Desvio : -2.0 a 2.0 pixels
+                    let jx = rand::gen_range(-2.0, 2.0);
+                    let jy = rand::gen_range(-2.0, 2.0);
 
                     *state = (duration, vec2(jx, jy));
                 }
@@ -185,8 +176,8 @@ impl AgentComponent for DirectionDeviateDecorator {
 
         if let Some(target) = original_target {
             let state = self.state.borrow();
-            // Se o timer de desvio está ativo, soma o vetor de desvio ao alvo
             if state.0 > 0.0 {
+                // Soma o pequeno vetor de tremor ao alvo
                 return Some(target + state.1);
             }
             return Some(target);
@@ -194,7 +185,7 @@ impl AgentComponent for DirectionDeviateDecorator {
         None
     }
 
-    // Pass-throughs obrigatórios
+    // Pass-throughs
     fn get_color(&self) -> Color {
         self.component.get_color()
     }
@@ -231,7 +222,6 @@ impl AgentComponent for DirectionDeviateDecorator {
 }
 
 /// --- DECORATOR 3: VisualAlertDecorator ---
-/// (Sem alterações funcionais, apenas código boilerplate mantido para consistência)
 pub struct VisualAlertDecorator {
     component: Box<dyn AgentComponent>,
     state: RefCell<(f32, Color)>,

@@ -27,7 +27,9 @@ mod command;
 mod initialization;
 mod observer;
 
-use agent_decorator::{AgentComponent, SpeedBoostDecorator};
+use agent_decorator::{
+    AgentComponent, DirectionDeviateDecorator, SpeedBoostDecorator, VisualAlertDecorator,
+};
 use grid::{CellType, Grid};
 
 use grid_adapter::{HexagonalAdapter, RectangularCardinalAdapter, RectangularDiagonalAdapter};
@@ -36,7 +38,7 @@ use pathfinding_adapter::a_star_with_adapter;
 
 use command::{CommandManager, MoveCommand};
 use initialization::init_system;
-use observer::{AgentEvent, RespawnHandler}; // Adicionado AgentEvent
+use observer::{AgentEvent, RespawnHandler};
 
 // --- Constantes da Simulação ---
 const CELL_SIZE: f32 = 20.0;
@@ -124,22 +126,25 @@ fn spawn_random_agents(
                     .collect();
                 let start_pixel_pos = grid_to_screen_center(start_pos, grid_mode);
 
+                // --- CRIAÇÃO COM OS NOVOS DECORATORS ---
+
                 // 1. Cria Agente Base (Factory)
                 let base_agent =
                     agent_creator.create_agent(start_pixel_pos, pixel_path, AGENT_SPEED, *next_id);
 
-                // 2. Aplica Decorator de Velocidade
-                let speed_agent = SpeedBoostDecorator::new(Box::new(base_agent), 2.0);
+                // 2. Aplica Desvio de Direção
+                let direction_agent = DirectionDeviateDecorator::new(Box::new(base_agent));
 
-                // 3. Aplica Decorator Visual (Envolve o de velocidade)
-                // O 'speed_agent' é movido para dentro daqui
-                let mut visual_agent =
-                    agent_decorator::VisualAlertDecorator::new(Box::new(speed_agent));
+                // 3. Aplica Decorator de Velocidade
+                let speed_agent = SpeedBoostDecorator::new(Box::new(direction_agent), 2.0);
 
-                // 4. Adiciona Observer na camada mais externa
+                // 4. Aplica Decorator Visual
+                let mut visual_agent = VisualAlertDecorator::new(Box::new(speed_agent));
+
+                // 5. Adiciona Observer na camada mais externa
                 visual_agent.add_observer(Box::new(RespawnHandler));
 
-                // 5. Guarda na lista
+                // 6. Guarda na lista
                 agents.push(Box::new(visual_agent));
 
                 *next_id += 1;
@@ -152,7 +157,7 @@ fn spawn_random_agents(
 
 fn window_conf() -> Conf {
     Conf {
-        window_title: "Trabalho 8".to_owned(),
+        window_title: "Trabalho 10".to_owned(),
         window_width: (GRID_WIDTH as f32 * CELL_SIZE) as i32,
         window_height: (GRID_HEIGHT as f32 * CELL_SIZE + 100.0) as i32,
         fullscreen: false,
@@ -275,17 +280,21 @@ async fn main() {
                                 next_agent_id,
                             );
 
-                            // 2. Adiciona Velocidade (opcional, para manter igual aos outros)
-                            let speed_agent = SpeedBoostDecorator::new(Box::new(base_agent), 2.0);
+                            // 2. Decorator de Direção
+                            let direction_agent =
+                                DirectionDeviateDecorator::new(Box::new(base_agent));
 
-                            // 3. Adiciona o Decorator Visual
-                            let mut visual_agent =
-                                agent_decorator::VisualAlertDecorator::new(Box::new(speed_agent));
+                            // 3. Decorator de Velocidade
+                            let speed_agent =
+                                SpeedBoostDecorator::new(Box::new(direction_agent), 2.0);
 
-                            // 4. Adiciona o Observer na camada mais externa
+                            // 4. Decorator Visual
+                            let mut visual_agent = VisualAlertDecorator::new(Box::new(speed_agent));
+
+                            // 5. Adiciona o Observer na camada mais externa
                             visual_agent.add_observer(Box::new(RespawnHandler));
 
-                            // 5. Adiciona à lista
+                            // 6. Adiciona à lista
                             agents.push(Box::new(visual_agent));
 
                             next_agent_id += 1;

@@ -1,6 +1,6 @@
+use crate::InputMode;
 use crate::agent_decorator::AgentComponent;
 use crate::grid::{CellType, Grid};
-use crate::{InputMode, CELL_SIZE};
 use macroquad::prelude::*;
 
 /// Desenha as linhas de grade (cinza claro)
