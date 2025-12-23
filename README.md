@@ -10,7 +10,7 @@
 | 6 | 18/11/25, 23:23 | [LINK](trabalho-6) | Sim |
 | 7 | 25/11/25, 20:33 | [LINK](trabalho-7) | Sim |
 | 8 | 02/12/25, 17:04 | [LINK](trabalho-8) | Sim |
-| 9 | 16/12/25, xx:xx | [LINK](trabalho-9) | xxx |
+| 9 | 16/12/25, 16:18 | [LINK](trabalho-9) | Sim |
 | 10 |
 | 11 |
 | 12 |
